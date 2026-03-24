@@ -95,6 +95,7 @@ type ConfigEnvKeys =
     | `DISCUZ_COOKIE_${string}`
     | 'DISQUS_API_KEY'
     | 'DOUBAN_COOKIE'
+    | 'DOUYIN_COOKIE'
     | 'EH_IPB_MEMBER_ID'
     | 'EH_IPB_PASS_HASH'
     | 'EH_SK'
@@ -365,6 +366,9 @@ export type Config = {
         cookie?: string;
     };
     dianping: {
+        cookie?: string;
+    };
+    douyin: {
         cookie?: string;
     };
     dida365: {
@@ -854,6 +858,9 @@ const calculateValue = () => {
         },
         dianping: {
             cookie: envs.DIANPING_COOKIE,
+        },
+        douyin: {
+            cookie: envs.DOUYIN_COOKIE,
         },
         dida365: {
             username: envs.DIDA365_USERNAME,

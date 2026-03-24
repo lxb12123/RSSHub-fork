@@ -26,6 +26,7 @@
         }
     },
     "scripts": {
+        "postinstall": "npx --yes puppeteer browsers install chrome@136.0.7103.49",
         "build": "npm run build:routes && tsdown",
         "build:docs": "npm run build:routes && tsx scripts/workflow/build-docs.ts",
         "build:lib": "npm run build:routes && tsdown --config ./tsdown-lib.config.ts",

@@ -44,23 +44,55 @@ async function handler(ctx) {
     const iframe = fallback(undefined, queryToBoolean(routeParams.iframe), false); // embed video in iframe
     const relay = resolveUrl(routeParams.relay, true, true); // embed video behind a reverse proxy
 
+    // Cookie 支持：URL 参数 > 环境变量，支持逗号分隔的多 Cookie 轮换
+    const cookieSource = routeParams.cookie || config.douyin?.cookie || '';
+    const cookieList = cookieSource.split(',').filter((c) => c.trim());
+    const cookie = cookieList[Math.floor(Math.random() * cookieList.length)]?.trim() || '';
+    if (cookieList.length > 1) {
+        logger.http(`[抖音] Cookie 轮换: 使用第 ${cookieList.indexOf(cookie) + 1}/${cookieList.length} 个`);
+    }
+
     const pageUrl = `https://www.douyin.com/user/${uid}`;
 
     const pageData = (await cache.tryGet(
         `douyin:user:${uid}`,
         async () => {
-            let postData;
+            const allAwemeList: any[] = [];
+            let hasMore = true;
             const browser = await puppeteer();
             const page = await browser.newPage();
             await page.setRequestInterception(true);
+
+            // 设置 Cookie
+            if (cookie) {
+                const cookies = cookie.split(';').map((c) => {
+                    const [name, ...rest] = c.trim().split('=');
+                    return {
+                        name,
+                        value: rest.join('='),
+                        domain: '.douyin.com',
+                    };
+                });
+                await page.setCookie(...cookies);
+                logger.http(`[抖音] 已设置 ${cookies.length} 个 Cookie`);
+            }
 
             page.on('request', (request) => {
                 request.resourceType() === 'document' || request.resourceType() === 'script' || request.resourceType() === 'xhr' ? request.continue() : request.abort();
             });
             page.on('response', async (response) => {
                 const request = response.request();
-                if (request.url().includes('/web/aweme/post') && !postData) {
-                    postData = await response.json();
+                if (request.url().includes('/web/aweme/post')) {
+                    try {
+                        const data = await response.json();
+                        if (data.aweme_list && data.aweme_list.length > 0) {
+                            allAwemeList.push(...data.aweme_list);
+                            hasMore = data.has_more === 1;
+                            logger.http(`[抖音] 捕获 ${data.aweme_list.length} 个视频, has_more: ${hasMore}, 总计: ${allAwemeList.length}`);
+                        }
+                    } catch (e) {
+                        logger.error(`[抖音] 解析响应失败: ${e}`);
+                    }
                 }
             });
 
@@ -69,13 +101,37 @@ async function handler(ctx) {
                 waitUntil: 'networkidle2',
             });
 
+            // 滚动加载更多视频
+            let scrollCount = 0;
+            const maxScrolls = 5; // 最多滚动 5 次
+            while (hasMore && scrollCount < maxScrolls) {
+                await page.evaluate(() => {
+                    window.scrollBy(0, 1000);
+                });
+                await new Promise((r) => setTimeout(r, 1500));
+                scrollCount++;
+                logger.http(`[抖音] 滚动 ${scrollCount}/${maxScrolls}`);
+            }
+
             await browser.close();
 
-            if (!postData) {
+            if (allAwemeList.length === 0) {
                 throw new Error('Empty post data. The request may be filtered by WAF.');
             }
 
-            return postData;
+            // 去重
+            const seen = new Set();
+            const uniqueList = allAwemeList.filter((item) => {
+                if (seen.has(item.aweme_id)) {
+                    return false;
+                }
+                seen.add(item.aweme_id);
+                return true;
+            });
+
+            logger.http(`[抖音] 总计获取 ${uniqueList.length} 个唯一视频`);
+
+            return { aweme_list: uniqueList };
         },
         config.cache.routeExpire,
         false
