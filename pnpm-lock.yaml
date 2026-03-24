@@ -6,6 +6,7 @@ settings:
 
 overrides:
   difflib: https://codeload.github.com/postlight/difflib.js/tar.gz/32e8e38c7fcd935241b9baab71bb432fd9b166ed
+  ellipsize: 0.1.0
   es-set-tostringtag: npm:@nolyfill/es-set-tostringtag@^1
   google-play-scraper>got: ^14.6.4
   google-play-scraper>ramda: ^0.32.0
@@ -3554,9 +3555,8 @@ packages:
   electron-to-chromium@1.5.313:
     resolution: {integrity: sha512-QBMrTWEf00GXZmJyx2lbYD45jpI3TUFnNIzJ5BBc8piGUDwMPa1GV6HJWTZVvY/eiN3fSopl7NRbgGp9sZ9LTA==}
 
-  ellipsize@0.7.0:
-    resolution: {integrity: sha512-zxc0AigE4HMvuiqEk7//BjwCSFBXseJCuGNxfjo6wz1BoCSrJDj8tYnIgn/Z7lQ2T89ZypvGyJvPCCVf9uErBA==}
-    engines: {node: ^20.19.0 || >= 22.12.0}
+  ellipsize@0.1.0:
+    resolution: {integrity: sha512-5gxbEjcb/Z2n6TTmXZx9wVi3N/DOzE7RXY3Xg9dakDuhX/izwumB9rGjeWUV6dTA0D0+juvo+JonZgNR9sgA5A==}
 
   emoji-regex@10.6.0:
     resolution: {integrity: sha512-toUI84YS5YmxW219erniWD0CIVOo46xGKColeNQRgOzDorgBi1v4D71/OFzgD9GO2UGKIv1C3Sp8DAn0+j5w7A==}
@@ -6982,7 +6982,7 @@ snapshots:
       cheerio: 1.2.0
       dayjs: 1.11.20
       difflib: https://codeload.github.com/postlight/difflib.js/tar.gz/32e8e38c7fcd935241b9baab71bb432fd9b166ed
-      ellipsize: 0.7.0
+      ellipsize: 0.1.0
       iconv-lite: 0.7.2
       postman-request: 2.88.1-postman.48
       string-direction: 0.1.2
@@ -9053,7 +9053,7 @@ snapshots:
 
   electron-to-chromium@1.5.313: {}
 
-  ellipsize@0.7.0: {}
+  ellipsize@0.1.0: {}
 
   emoji-regex@10.6.0: {}
 
