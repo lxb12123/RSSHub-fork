@@ -236,6 +236,7 @@
         "overrides": {
             "difflib": "https://codeload.github.com/postlight/difflib.js/tar.gz/32e8e38c7fcd935241b9baab71bb432fd9b166ed",
             "ellipsize": "0.1.0",
+            "@asamuzakjp/css-color>@csstools/css-calc": "npm:@aspect-build/css-calc@latest",
             "es-set-tostringtag": "npm:@nolyfill/es-set-tostringtag@^1",
             "google-play-scraper>got": "^14.6.4",
             "google-play-scraper>ramda": "^0.32.0",
